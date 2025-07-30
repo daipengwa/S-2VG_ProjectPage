@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="SVG">
+  <meta name="keywords" content="SVG, 3D video, stereoscopic video">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S<sup>2</sup>VG: 3D Stereoscopic and Spatial Video Generation via Denoising Frame Matrix</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<!--   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+
+  </script> -->
+  <style>
+  .hr {width: 100%; height: 1px; margin: 48px 0; background-color: #d6dbdf;}
+  </style>
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/bulma.min.css">
+  <link rel="stylesheet" href="./assets/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./assets/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./assets/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./assets/css/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  
+  <!-- custom css file  -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/twentytwenty.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./assets/js/fontawesome.all.min.js"></script>
+</head>
+<body>
+
+
+  <nav class="navbar" role="navigation" aria-label="main navigation" style="position: fixed; top: 0; width: 100%;">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="">
+          <span class="icon">
+              <i class="fas fa-home"></i>
+          </span>
+          </a>
+  
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Table of Contents
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#abstract">
+              Abstract
+            </a>
+            <a class="navbar-item" href="#method-overview">
+              Method overview
+            </a>
+            <a class="navbar-item" href="#ablation">
+              Ablation study
+            </a>
+            <a class="navbar-item" href="#comparison">
+              Comparison with baselines
+            </a>
+            <a class="navbar-item" href="#mvvideo">
+              Multi-view videos
+            </a>
+            <a class="navbar-item" href="#3d-videos">
+              3D stereoscopic videos
+            </a>
+            <a class="navbar-item" href="#spatial-videos">
+              3D spatial videos
+            </a>
+            <a class="navbar-item" href="#3d-visualization">
+              3D effects visualization
+            </a>
+            <a class="navbar-item" href="#fm-interpolation">
+              Frame interpolation via 4D representation
+            </a>
+            <a class="navbar-item" href="#3d-viewer">
+              3D Viewer
+            </a>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </nav>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop head">
+      <div class="columns is-centered">
+        <div class="column has-text-centered head">
+          <h1 class="title is-2 publication-title"> 
+            S<sup>2</sup>VG: 3D Stereoscopic and Spatial Video Generation <br>
+            via Denoising Frame Matrix
+          </h1>
+
+          <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              Peng Dai<sup>1,2</sup>, Feitong Tan<sup>1*</sup>, Qiangeng Xu<sup>1*</sup>, David Futschik<sup>1</sup>, Ruofei Du<sup>1</sup>, Sean Fanello<sup>1</sup>, Xiaojuan Qi<sup>2</sup>, Yinda Zhang<sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <sup>1</sup>Google <sup>2</sup>The University of Hong Kong 
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              ICLR 2025
+            </span>
+          </div> -->
+
+          <!-- <div class="column has-text-centered"> -->
+            <!-- <div class="publication-links"> -->
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/pdf/2407.00367"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Arxiv</span>
+                </a>
+              </span> -->
+              <!-- <span class="link-block">
+                <a href="https://openreview.net/pdf?id=sx2jXZuhIx"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (under review, coming soon)</span>
+                  </a> -->
+              <!-- </span>
+              Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://drive.google.com/drive/folders/1qu5Z6U505MBidjNR2p77G9bmUy-eYND9"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div> -->
+
+          <!-- </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- first row -->
+
+<section  class="hero is-light is-small" id="teaser" >
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+      </br>
+      <div class="video">
+        <video id="oursVideo_r2" muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/teaser.mp4" type="video/mp4">
+        </video> 
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section  class="hero is-light is-small" id="abstract" >
+  
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+      </br>
+        <h2 class="title is-3 has-text-centered">Abstract</h2>
+        <div class="column has-text-justified">
+          <p>While video generation models excel at producing high-quality monocular videos, generating 3D stereoscopic and spatial videos for immersive applications remains an underexplored challenge. 
+            We present a pose-free and training-free method that leverages an off-the-shelf monocular video generation model to produce immersive 3D videos. Our approach first warps the generated monocular video into pre-defined camera viewpoints using estimated depth information, then applies a novel frame matrix inpainting framework. This framework utilizes the original video generation model to synthesize missing content across different viewpoints and timestamps, ensuring spatial and temporal consistency without requiring additional model fine-tuning. 
+            Moreover, we develop a disocclusion boundary re-injectio scheme that further improves the quality of video inpainting by alleviating the negative effects propagated from disoccluded areas in the latent space. 
+            The resulting multi-view videos are then adapted into stereoscopic pairs or fitted into 4D Gaussians for spatial video synthesis.  
+            We validate the efficacy of our proposed method by conducting experiments on videos from various generative models, including Sora, Lumiere, WALT, and Zeroscope. The experiments demonstrate that our method has a significant improvement over previous methods.
+          </p>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section" id="method-overview">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column">
+        <h2 class="title is-3 has-text-centered">Method Overview</h2>
+        <div class="column has-text-justified">
+          <image src="./results1/pipeline.png" width="100%"></image>
+          <br>
+          <br>
+          <p> <b>Top</b>: Given a text prompt, our method first employs a video generation model to generate a monocular video, which is warped into pre-defined camera views using estimated depth to form a frame matrix with disocclusion masks. 
+            Then, the disoccluded regions are inpainted by denoising the sampled frame sequences within the frame matrix. After denoising, we decode the clean latent frame matrix into RGB frames, where the 3D stereoscopic video is obtained via choosing the leftmost and rightmost columns. 
+            To generate spatial video, we optimize decoded frames into a 4D representation (e.g., 4D Gaussian) that supports continuous view changes. 
+             
+            <b>Bottom</b>: Details of denoising frame matrix. We initialize the latent matrix as a random noise map. For each noise level, we extend the resampling mechanism to alternatively
+            denoise <span style="background-color: hwb(12 16% 15%);">temporal (column) sequences</span> and <span style="background-color: #F1CCB1;">spatial (row) sequences</span>  N times. Each time, row or column sequences are denoised and inpainted. By denoising along both spatial and
+            temporal directions, we obtain an inpainted latent which can be decoded into temporally smooth and semantically consistent sequences.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="ablation" class="section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3">Ablation Study</h2>
+        </div>
+        
+        <center> 
+          <p>
+            Consistent and smooth inpainting is the cornerstone of converting monocular videos into 3D stereoscopic and spatial videos. <br/>
+            Frame matrix helps generate semantically reasonable content and benefits consistency across different viewpoints. <br/>
+            Disocclusion boundary re-injection helps to reduce negative effects of inpainted pixels, and ensures high-quality generation. <br/>
+            Outpainting handles partially observbed objects for complete object generation.
+          </p>
+        </center>
+        
+
+        <!-- Method Buttons -->
+        <div class="columns is-centered has-text-centered">
+          <p> <br>
+            Here we show the effect of the components we introduce in our system →
+          </p>
+        </div>
+
+        <div class="buttons has-addons is-centered">
+          <button class="button" onclick="updateVideos2('NoFm1')">Without frame matrix 1</button>
+          <button class="button" onclick="updateVideos2('NoFm2')">Without frame matrix 2</button>
+          <button class="button" onclick="updateVideos2('NoRI')">Without disocclusion boundary re-injection</button>
+          <button class="button" onclick="updateVideos2('NoOP')">Without Outpainting</button>
+          <button class="button" onclick="updateVideos2('base')">Without depth smoothing</button>
+        </div>
+
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+              <p> Ours </p>
+          </div>
+          <div class="column has-text-centered">
+              <p id="currentMethodDisplay2"> No Frame Matrix </p>
+          </div>
+        </div>
+          
+        <div class="columns is-centered ">
+            <div class="column is-12">
+                <div class="content has-text-justified">
+                    <div class="item">
+
+                        <div class="twentytwenty-container" id="ablationTwentyTwentyContainer" data-before-label="Our Method" data-after-label="Ablation" data-orientation="horizontal" ratio="0.5">
+
+                            <div class="video">
+                                <video id="methodVideo2" muted autoplay="autoplay" loop="loop" width="100%">
+                                    <source src="./results1/ab/v1_consistency.mp4" type="video/mp4">
+                                </video> 
+                            </div>
+
+                            <div class="video">
+                                <video id="gtVideo2" muted autoplay="autoplay" loop="loop" width="100%">
+                                    <source src="./results1/ab/v1_consistency_no_fm.mp4" type="video/mp4">
+                                </video> 
+                            </div>
+                        </div>
+                        <p class="video-caption">Video ablations (right eye view)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="comparison" class="section">
+    <div class="container ">
+        <div class="columns is-centered has-text-centered">
+            <h2 class="title is-3">Comparison with Previous Methods</h2>
+        </div>
+        
+        <center>
+          <p>
+            Compared to previous methods, our approach generates high-fidelity content in disoccluded regions and provides a high level of temporal and semantic consistency. 
+          </p>
+        </center><br>
+
+
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-8">
+            <div class="content has-text-justified">
+                <div class="item">
+                    <div class="video">
+                        <video id="inputVideo" muted autoplay="autoplay" loop="loop" width="100%">
+                            <source src="./results1/comparisons/v1_ours_corgi_left.mp4" type="video/mp4">
+                        </video> 
+                    </div>
+                    <p class="video-caption">Left eye view</p>
+                </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Method Buttons -->
+        <div class="buttons has-addons is-centered">
+          <button class="button" id="edvrButton" onclick="updateVideos1('base')">DynIBaR</button>
+          <button class="button" onclick="updateVideos1('e2fgvi')">E2FGVI</button>
+          <button class="button" onclick="updateVideos1('propainter')">ProPainter</button>
+          <button class="button" onclick="updateVideos1('robdynerf')">RoDynRF</button>
+          <button class="button" onclick="updateVideos1('adampi')">AdaMPI</button>
+          <button class="button" onclick="updateVideos1('svm')">SVM</button>
+      </div>
+      
+      <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <p id="currentMethodDisplay"> DynIBaR </p>
+          </div>
+          <div class="column has-text-centered">
+              <p> Ours </p>
+          </div>
+      </div>
+
+        <div class="columns is-centered ">
+
+            <div class="column is-8">
+                <div class="content has-text-justified">
+                    <div class="item">
+
+                        <div class="twentytwenty-container" data-orientation="horizontal" ratio="0.5" data-before-label="Previous method">
+
+                            <div class="video">
+                                <video id="methodVideo" muted autoplay="autoplay" loop="loop" width="100%">
+                                    <source src="./results1/comparisons/v1_dynibar_corgi.mp4" type="video/mp4">
+                                </video> 
+                            </div>
+
+                            <div class="video">
+                                <video id="oursVideo" muted autoplay="autoplay" loop="loop" width="100%">
+                                    <source src="./results1/comparisons/v1_ours_corgi.mp4" type="video/mp4">
+                                </video> 
+                            </div>
+                        </div>
+                        <p class="video-caption">Right eye view (generated)</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <hr>
+        <center>
+          <p>Even in sequences with fast motion, our results demonstrate superior performace.</p>
+        </center>
+        
+            <!-- 2nd -->
+            <div class="columns is-centered has-text-centered">
+              <div class="column is-8">
+                <div class="content has-text-justified">
+                    <div class="item">
+                        <div class="video">
+                            <video id="inputVideo_r2" muted autoplay="autoplay" loop="loop" width="100%">
+                                <source src="./results1/comparisons/v1_ours_knight_left.mp4" type="video/mp4">
+                            </video> 
+                        </div>
+                        <p class="video-caption">Left eye view</p>
+                    </div>
+                </div>
+                
+              </div>
+            </div>
+    
+            <!-- Method Buttons -->
+            <div class="buttons has-addons is-centered">
+              <button class="button" id="edvrButton" onclick="updateVideos_r2('base')">E2FGVI</button>
+              <button class="button" onclick="updateVideos_r2('propainter')">ProPainter</button>
+              <button class="button" onclick="updateVideos_r2('robdynerf')">RoDynRF</button>
+              <button class="button" disabled>DynIBaR (fails)</button>
+              <button class="button" onclick="updateVideos_r2('adampi')">AdaMPI</button>
+              <button class="button" onclick="updateVideos_r2('svm')">SVM</button>
+            </div>
+
+            
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                  <p id="currentMethodDisplay_r2"> E2FGVI </p>
+                </div>
+                <div class="column has-text-centered">
+                    <!-- <p  style="background-color: #FFD700; max-width: 50%"> Ours </p> -->
+                    <p> Ours </p>
+                </div>
+            </div>
+            
+    
+            <div class="columns is-centered ">
+    
+                <div class="column is-8">
+                    <div class="content has-text-justified">
+                        <div class="item">
+    
+                            <div class="twentytwenty-container" data-orientation="horizontal" ratio="0.5" data-before-label="Previous method">
+    
+                                <div class="video">
+                                    <video id="methodVideo_r2" muted autoplay="autoplay" loop="loop" width="100%">
+                                        <source src="./results1/comparisons/v1_e2fgvi_knight.mp4" type="video/mp4">
+                                    </video> 
+                                </div>
+    
+                                <div class="video">
+                                    <video id="oursVideo_r2" muted autoplay="autoplay" loop="loop" width="100%">
+                                        <source src="./results1/comparisons/v1_ours_knight.mp4" type="video/mp4">
+                                    </video> 
+                                </div>
+                            </div>
+                            <p class="video-caption">Right eye view (generated)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <hr>
+        <center>
+          <p>When comparing with the concurrent 4D scene generation method (Free4D), our approach achieves robust and superioir performance on objects with complex motions. (* denotes Free4D failed in 4D reconstuction and use its inpainted novel-view video instead.) </p>
+        </center> 
+        <br>
+
+
+                <!-- Method Buttons -->
+              <div class="buttons has-addons is-centered">
+                  <button class="button" id="edvrButton" onclick="updateVideos3('base')">FixedCamera</button>
+                  <button class="button" onclick="updateVideos3('moderate')">ModerateMotion</button>
+                  <button class="button" onclick="updateVideos3('fastmotion')">FastMotion*</button>
+                  <button class="button" onclick="updateVideos3('nonrigid')">NonRigidMotion*</button>
+              </div>
+              
+              
+              <div class="columns is-centered">
+                <div class="column has-text-centered">
+                  <p id="currentMethodDisplay3"> FixedCamera </p> 
+                </div>
+                <div class="column has-text-centered">
+                  <p> Ours </p>
+                </div>
+              </div>
+              </div>
+          
+          
+              <div class="columns is-centered ">
+                  <div class="column is-6">
+                      <div class="content has-text-justified">
+                          <div class="item">
+                              <div class="twentytwenty-container" id="ablationTwentyTwentyContainer" data-before-label="Our Method" data-after-label="Free4D" data-orientation="horizontal" ratio="0.5">
+                                <div class="video">
+                                  <video id="methodVideo3" muted autoplay="autoplay" loop="loop" width="100%">
+                                      <source src="./results1/comparisons/Trump_free4d.mp4" type="video/mp4">
+                                  </video> 
+                              </div>  
+                                <div class="video">
+                                      <video id="oursVideo3" muted autoplay="autoplay" loop="loop" width="100%">
+                                          <source src="./results1/comparisons/Trump_our.mp4" type="video/mp4">
+                                      </video> 
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+  
+    </div>
+</section>
+
+<section id="mvvideo" class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+
+
+    <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Mutli-View Videos</h2>
+    </div>    
+    
+
+    <div class="columns is-centered">
+    <div class="column is-6">
+      <div class="video">
+        <video id="oursVideo_r2" muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/An_astronaut_in_full_space_suit_riding_a_horse_left.mp4" type="video/mp4">
+        </video> 
+        <center><p>Reference left view</p></center>
+    </div>
+    </div>
+    </div>
+  
+       
+    <div id="results-carousel" class="carousel results-carousel" data-slides-to-show="2">
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_ft_cv_case1_time1.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_ft_cv_case1_time2.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_fv_ct_case1_view1.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_fv_ct_case1_view2.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+      </div>
+      <center>
+        <p> We can generate multi-view videos by decoding the whole frame matrix. We can fix time and change views
+          (<span style="background-color: #F1CCB1;">spatial direction</span>, first two sequences), or view the scene from different camera perspectives
+          (<span style="background-color: hwb(12 16% 15%);">time direction</span>, last two sequences). </p>
+      </center>
+      <br>
+      <br>
+      <!-- 2-->
+      <div class="columns is-centered">
+        <div class="column is-6">
+          <div class="video">
+            <video id="oursVideo_r2" muted autoplay="autoplay" loop="loop" width="100%">
+                <source src="./results1/multi_trajectory/A_futuristic_plane_flying_over_the_desert_left_view.mp4" type="video/mp4">
+            </video> 
+            <center><p>Reference left view</p></center>
+        </div>
+        </div>
+        </div>
+      <div id="results-carousel" class="carousel results-carousel" data-slides-to-show="2">
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_ft_cv_case2_time1.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_ft_cv_case2_time2.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_fv_ct_case2_view1.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+            <source src="./results1/multi_trajectory/v1_fv_ct_case2_view2.mp4" type="video/mp4">
+            </video> 
+        </div>
+      </div>
+
+
+      </div>
+
+      <center>
+        <p>The pre-defined camera trajectory used to construct the frame matrix is flexible. In this case, we show a circle trajectory.</p>
+      </center>
+      
+  </div>
+</section>
+
+
+<section class="section" id="3d-videos">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-24">
+        <h2 class="title is-3 has-text-centered">3D Stereoscopic Videos</h2>
+
+        <div class="column has-text-centered">
+          <p> Stereoscopic video provides fixed viewpoints to observe the scene. </p>
+        </div>
+
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_stereoscopic_videos/v1_astronaut_horse.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_stereoscopic_videos/v1_corgi_vlog.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_stereoscopic_videos/v1_panda.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_stereoscopic_videos/v1_teddy.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_stereoscopic_videos/car_drift.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+    <!-- <div class="video">
+      <image src="./results1/3D_stereoscopic_videos/camel.gif" width="100%"></image>
+    </div> -->
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_stereoscopic_videos/obama.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="spatial-videos">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-24">
+        <h2 class="title is-3 has-text-centered">3D Spatial Videos</h2>
+
+
+        <div class="column has-text-centered">
+          <p> Spatial videos enable viewpoint changes when observing the scene (stereoscopic novel view synthesis). </p>
+        </div>
+
+        <div class="video">
+            <video muted autoplay="autoplay" loop="loop" width="100%">
+                <source src="./results1/3D_spatial_videos/obama_spatial.mp4" type="video/mp4">
+            </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/plane_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/knight_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/dragon_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/corgi_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/corgi_run_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/trump_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/ship_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/sunset_spatial.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="3d-visualization">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-24">
+        <h2 class="title is-3 has-text-centered">3D Effects Visualization</h2>
+
+
+        <div class="column has-text-centered">
+          <p> The rendered depth maps, which contain distingused foreground and background content, indicate reasonable 3D effects. The left side demonstrate the RGB video. </p>
+        </div>
+
+        <div class="video">
+            <video muted autoplay="autoplay" loop="loop" width="100%">
+                <source src="./results1/3D_spatial_videos/obama_depth.mp4" type="video/mp4">
+            </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/plane_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/knight_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/dragon_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/corgi_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/corgi_run_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/trump_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/ship_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/sunset_depth.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="fm-interpolation">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-24">
+        <h2 class="title is-3 has-text-centered">Frame Interpolation via 4D Representation</h2>
+
+
+        <div class="column has-text-centered">
+          <p> The left side is the original video, and the right side is video after frame interpolation (via interpolating time in 4D, x4). The campabiltiy of frame interpolation demostrate the continuity of our 4D representation in time direction. </p>
+        </div>
+
+        <div class="video">
+            <video muted autoplay="autoplay" loop="loop" width="100%">
+                <source src="./results1/3D_spatial_videos/obama_ip.mp4" type="video/mp4">
+            </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/teddy_dance_ip.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/knight_ip.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/ship_ip.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+        <div class="video">
+          <video muted autoplay="autoplay" loop="loop" width="100%">
+              <source src="./results1/3D_spatial_videos/astronaut_ip.mp4" type="video/mp4">
+          </video> 
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="3d-viewer">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-24">
+        <h2 class="title is-3 has-text-centered">3D Viewer</h2>
+
+
+        <div class="column has-text-centered">
+            <!-- <p> If you happen to have a VR headset, we encourage you to view these <a href="https://drive.google.com/drive/folders/1WrY2HehPIKi10AtzZLPuG9S1YsxnP3zI?usp=sharing">videos</a> in stereo! </p> -->
+             <p> If you happen to have a VR headset, we encourage you to view these videos in stereo! </p>
+          <p> In VR headsets, enter this webpage, you need to choose one of the following cases. After this, you can enjoy the 3D video. </p>
+          <br>
+          <p> <a href="https://daipengwa.github.io/SVG_3D_astronaut/"><img src="./images/astronaut.png" width="280" height="160"></a>,&nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_corgi/"><img src="./images/corgi.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_dragon/"><img src="./images/dragon.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_panda/"><img src="./images/panda.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_teddy_city/"><img src="./images/teddy_city.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_car/"><img src="./images/car.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+          </p>
+            <br>
+          <p>
+            <a href="https://daipengwa.github.io/SVG_3D_obama/"><img src="./images/obama.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_trump/"><img src="./images/trump.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_church/"><img src="./images/church.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_teddy_snow/"><img src="./images/teddy_snow.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_dolphins/"><img src="./images/dolphins.png" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp 
+            <a href="https://daipengwa.github.io/SVG_3D_spaceship/"><img src="./images/spaceship.jpg" width="280" height="160"></a>, &nbsp&nbsp&nbsp&nbsp
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+
+    <!-- <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <div class="columns is-centered"><p>
+            We thank <a
+            href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and <a href="https://shangchenzhou.com/projects/upscale-a-video/">Upscale-A-Video</a> for its template.
+          </p></div>
+        </div>
+      </div>
+    </div> -->
+
+
+  </div>
+</footer>
+
+  <!-- custom js file  -->
+  <!-- <script defer src="./assets/js/fontawesome.all.min.js"></script> -->
+  <script src="./assets/js/bulma-carousel.min.js"></script>
+  <script src="./assets/js/bulma-slider.min.js"></script>
+  <script src="./assets/js/index.js"></script>
+  <script src="./assets/js/jquery.event.move.js"></script>
+  <script src="./assets/js/jquery.twentytwenty.js"></script>
+  <script src="./assets/js/select.js"></script>
+  <script>
+  $(function(){
+    $(".twentytwenty-container").twentytwenty();
+    // $(".twentytwenty-container", "#results-carousel").twentytwenty({default_offset_pct: 0.5, ratio: 0.5});
+  });
+  </script>
+  <script>
+    $(document).ready(function() {
+    var referenceVideo = $('#inputVideo2');
+    var specificTwentyTwentyContainer = $('#ablationTwentyTwentyContainer'); // targeting the specific container
+
+    function adjustTwentyTwentySize() {
+        var videoWidth = referenceVideo.width();
+        var videoHeight = referenceVideo.height();
+        // console.log("Setting TwentyTwenty size to:", videoWidth, videoHeight);
+        specificTwentyTwentyContainer.width(videoWidth);
+        specificTwentyTwentyContainer.height(videoHeight);
+        // console.log("Setting done! ", videoWidth, videoHeight);
+
+        // Adjust the size of the videos inside the TwentyTwenty container
+        specificTwentyTwentyContainer.find('video').each(function() {
+            $(this).width(videoWidth);
+            $(this).height(videoHeight);
+        });
+    }
+
+    // referenceVideo.on('loadedmetadata', adjustTwentyTwentySize);
+    referenceVideo.on('loadedmetadata', function() {
+      adjustTwentyTwentySize();
+    });
+    $(window).resize(adjustTwentyTwentySize);
+    });
+  </script>
+  <script>
+    function checkSliderValue() {
+        var slider = document.getElementById('dataSlider');
+        var edvrButton = document.getElementById('edvrButton');
+        var sliderValue = slider.value;
+
+        // Update the display of slider value
+        document.getElementById('sliderValue').textContent = sliderValue;
+
+        // Enable or disable the EDVR button based on slider value
+        edvrButton.disabled = sliderValue > 2;
+    }
+
+    // Call the function initially to set the correct state of the button
+    checkSliderValue();
+
+  </script>
+</body>
+</html>
