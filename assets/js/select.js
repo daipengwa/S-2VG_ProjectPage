@@ -144,7 +144,6 @@ function updateVideos_r2(method = null) {
 updateVideos_r2('base');
 
 
-
 function updateVideos3(method = null) {
     var methodNames_3 = {
         'base': 'FixedCamera',
@@ -182,3 +181,35 @@ function updateVideos3(method = null) {
 
 // Initialize the third set of videos
 updateVideos3('base');
+
+
+function updateVideos4(method = null) {
+    var methodNames_4 = {
+        'base': 'LeftView',
+        'rightview': 'RightView',
+    }
+    if (method) {
+        currentMethod = method;
+        var fullName = methodNames_4[method];// || method;
+        document.getElementById('currentMethodDisplay4').textContent = fullName;
+    }
+
+    if (currentMethod == "base") {
+        document.getElementById('methodVideo4').src = './results1/comparisons/lr_l.mp4';
+        document.getElementById('oursVideo4').src = './results1/comparisons/sr_l.mp4';
+    }
+
+    if (currentMethod == "rightview") {
+        document.getElementById('methodVideo4').src = './results1/comparisons/lr_r.mp4';
+        document.getElementById('oursVideo4').src = './results1/comparisons/sr_r.mp4';
+    }
+
+
+}
+
+// Initialize the third set of videos
+updateVideos4('base');
+
+
+
+
