@@ -89,6 +89,9 @@
             <a class="navbar-item" href="#fm-interpolation">
               Frame interpolation via 4D representation
             </a>
+            <a class="navbar-item" href="#SR">
+              Stereoscopic video super resolution
+            </a>
             <a class="navbar-item" href="#3d-viewer">
               3D Viewer
             </a>
@@ -889,6 +892,61 @@
 
       </div>
     </div>
+  </div>
+</section>
+
+
+<section class="section" id="SR">
+  <div class="container ">
+    <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Stereoscopic Video Super Resolution</h2>
+    </div>
+
+
+        <div class="column has-text-centered">
+          <p> Our stereoscopic video super-resolution design upsamples the video to provide more details. </p>
+        </div>
+
+        <!-- Method Buttons -->
+        <div class="buttons has-addons is-centered">
+            <button class="button" id="edvrButton" onclick="updateVideos4('base')">LeftView</button>
+            <button class="button" onclick="updateVideos4('rightview')">RightView</button>
+        </div>
+        
+        
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <p id="currentMethodDisplay4"> Bilinear </p> 
+          </div>
+          <div class="column has-text-centered">
+            <p> Ours </p>
+          </div>
+        </div>
+        </div>
+    
+    
+        <div class="columns is-centered ">
+            <div class="column is-7">
+                <div class="content has-text-justified">
+                    <div class="item">
+                        <div class="twentytwenty-container" id="ablationTwentyTwentyContainer" data-before-label="Bilinear" data-after-label="Ours" data-orientation="horizontal" ratio="0.5">
+                          <div class="video">
+                            <video id="methodVideo4" muted autoplay="autoplay" loop="loop" width="200%">
+                                <source src="./results1/comparisons/lr_l.mp4" type="video/mp4">
+                            </video> 
+                        </div>  
+                          <div class="video">
+                                <video id="oursVideo4" muted autoplay="autoplay" loop="loop" width="200%">
+                                    <source src="./results1/comparisons/sr_l.mp4" type="video/mp4">
+                                </video> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
   </div>
 </section>
 
